@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="language.js" defer></script>
+    <style>
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .role-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .role-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .role-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            background: #f8fafc;
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            border-radius: 50%;
+        }
+
+        .login-form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .login-form-container.active {
+            display: block;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 1rem;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .back-btn:hover {
+            color: var(--primary-color);
+            transform: translateX(-5px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-particles"></div>
+    <nav class="navbar animate-fade-up">
+        <div class="logo">
+            <span class="icon-logo">🗳️</span>
+            <span data-lang="title">Online Voting</span>
+        </div>
+        <select id="langSelect">
+            <option value="en">English</option>
+            <option value="ta">தமிழ்</option>
+            <option value="hi">हिन्दी</option>
+        </select>
+    </nav>
+
+    <div class="container" style="min-height: 80vh; display: flex; flex-direction: column; justify-content: center;">
+
+        <!-- STEP 1: ROLE SELECTION -->
+        <div id="roleSelection" class="animate-fade-up" style="animation-delay: 0.1s;">
+            <h2 class="text-center" data-lang="selectRole"
+                style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary-color);">Select Login Role</h2>
+            <div class="role-grid">
+                <!-- VOTER CARD -->
+                <div class="role-card animate-fade-up" style="animation-delay: 0.2s;" onclick="showForm('voter')">
+                    <div class="role-icon">🙋</div>
+                    <h3 data-lang="voter" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Voter</h3>
+                    <p data-lang="voterLoginDesc" style="color: var(--text-light);">Login with Aadhaar to vote.</p>
+                </div>
+
+                <!-- CANDIDATE CARD -->
+                <div class="role-card animate-fade-up" style="animation-delay: 0.3s;" onclick="showForm('candidate')">
+                    <div class="role-icon">🕴️</div>
+                    <h3 data-lang="candidate" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Candidate</h3>
+                    <p data-lang="candidateLoginDesc" style="color: var(--text-light);">Login to manage your campaign.
+                    </p>
+                </div>
+
+                <!-- ADMIN CARD -->
+                <div class="role-card animate-fade-up" style="animation-delay: 0.4s;" onclick="showForm('admin')">
+                    <div class="role-icon">🛡️</div>
+                    <h3 data-lang="admin" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Administrator</h3>
+                    <p data-lang="adminLoginDesc" style="color: var(--text-light);">Login to manage elections.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: LOGIN FORMS -->
+        <div id="loginForms" class="login-form-container">
+            <button class="back-btn" onclick="showRoles()" data-lang="backToRole">← Back</button>
+
+            <div class="card">
+                <h2 id="formTitle" class="text-center" style="margin-bottom: 2rem;">Login</h2>
+
+                <!-- Voter Form -->
+                <form id="voterForm" onsubmit="handleLogin(event, 'voter')" class="hidden">
+                    <div class="form-group">
+                        <label data-lang="aadhaar">Aadhaar Number</label>
+                        <input type="text" name="identifier" required placeholder="Enter 12-digit Aadhaar">
+                    </div>
+                    <button type="submit" data-lang="submit" style="width: 100%;">Get OTP</button>
+                </form>
+
+                <!-- OTP Section -->
+                <div id="otpSection" class="hidden mt-2 animate-fade-up">
+                    <div class="form-group">
+                        <label data-lang="otp">Enter OTP</label>
+                        <input type="text" id="otpInput" placeholder="xxxx">
+                    </div>
+                    <button onclick="verifyOtp()" data-lang="verifyVote"
+                        style="width: 100%; background: var(--gradient-accent);">Verify & Vote</button>
+                    <small style="display: block; text-align: center; margin-top: 10px; color: var(--text-light);">Check
+                        server console for OTP (simulated)</small>
+                </div>
+
+                <!-- Candidate Form -->
+                <form id="candidateForm" onsubmit="handleLogin(event, 'candidate')" class="hidden">
+                    <div class="form-group">
+                        <label data-lang="mobile">Mobile Number</label>
+                        <input type="text" name="identifier" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-lang="password">Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+                    <button type="submit" data-lang="login" style="width: 100%;">Login</button>
+                </form>
+
+                <!-- Admin Form -->
+                <form id="adminForm" onsubmit="handleLogin(event, 'admin')" class="hidden">
+                    <div class="form-group">
+                        <label data-lang="adminId">Admin ID</label>
+                        <input type="text" name="identifier" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-lang="password">Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+                    <button type="submit" data-lang="login" style="width: 100%;">Login</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showForm(role) {
+            // Hide Role Selection
+            document.getElementById('roleSelection').style.display = 'none';
+
+            // Show Forms Container
+            const container = document.getElementById('loginForms');
+            container.classList.add('active');
+
+            // Hide all specific forms
+            document.getElementById('voterForm').classList.add('hidden');
+            document.getElementById('candidateForm').classList.add('hidden');
+            document.getElementById('adminForm').classList.add('hidden');
+            document.getElementById('otpSection').classList.add('hidden');
+
+            // Show selected form
+            document.getElementById(`${role}Form`).classList.remove('hidden');
+
+            // Update Title
+            const titles = {
+                'voter': 'Voter Login',
+                'candidate': 'Candidate Login',
+                'admin': 'Admin Login'
+            };
+            document.getElementById('formTitle').innerText = titles[role];
+        }
+
+        function showRoles() {
+            document.getElementById('loginForms').classList.remove('active');
+            document.getElementById('roleSelection').style.display = 'block';
+
+            // Re-trigger animation hack
+            const grid = document.getElementById('roleSelection');
+            grid.classList.remove('animate-fade-up');
+            void grid.offsetWidth; // trigger reflow
+            grid.classList.add('animate-fade-up');
+        }
+
+        let currentAadhaar = '';
+
+        async function handleLogin(e, role) {
+            e.preventDefault();
+            const identifier = e.target.identifier.value;
+            const password = e.target.password ? e.target.password.value : null;
+
+            if (role === 'voter') {
+                currentAadhaar = identifier;
+            }
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ role, identifier, password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    if (role === 'voter') {
+                        document.querySelector('#voterForm').classList.add('hidden');
+                        document.getElementById('otpSection').classList.remove('hidden');
+                        alert(data.message); // OTP Sent
+                    } else if (role === 'candidate') {
+                        localStorage.setItem('candidateId', data.candidateId);
+                        window.location.href = 'candidate.html';
+                    } else if (role === 'admin') {
+                        localStorage.setItem('adminToken', data.token);
+                        localStorage.setItem('adminRole', data.role);
+                        window.location.href = 'admin.html';
+                    }
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function verifyOtp() {
+            const otp = document.getElementById('otpInput').value;
+            try {
+                const res = await fetch('/api/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ aadhaar: currentAadhaar, otp })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    sessionStorage.setItem('voterAadhaar', currentAadhaar);
+                    window.location.href = 'vote.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+
+</html>

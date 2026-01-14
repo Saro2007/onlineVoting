@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Signup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="language.js" defer></script>
+</head>
+
+<body>
+    <div class="background-particles"></div>
+    <nav class="navbar animate-fade-up">
+        <div class="logo"><span class="icon-logo">🗳️</span> <span data-lang="title">Online Voting</span></div>
+        <select id="langSelect">
+            <option value="en">English</option>
+            <option value="ta">தமிழ்</option>
+            <option value="hi">हिन्दी</option>
+        </select>
+    </nav>
+
+    <div class="container animate-fade-up" style="animation-delay: 0.1s;">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 data-lang="voter" class="text-center" style="margin-bottom: 2rem;">Voter Registration</h2>
+            <form id="voterForm">
+                <div class="form-group animate-fade-up" style="animation-delay: 0.2s;">
+                    <label data-lang="name">Full Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.3s;">
+                    <label data-lang="email">Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.4s;">
+                    <label data-lang="aadhaar">Aadhaar Number</label>
+                    <input type="text" name="aadhaar" pattern="\d{12}" title="12 digit Aadhaar" required
+                        placeholder="12-digit UID">
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.5s;">
+                    <label data-lang="dob">Date of Birth</label>
+                    <input type="date" name="dob" id="dob" required>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.6s;">
+                    <label data-lang="photo">Upload Photo</label>
+                    <!-- Ensure this label exists or is removed if redundant with button text -->
+                    <label for="photoInput" class="custom-file-upload">
+                        <span>📤</span> <span data-lang="photo">Choose Photo</span>
+                    </label>
+                    <input type="file" id="photoInput" accept="image/*" required onchange="showFileName(this)">
+                    <div id="fileName" class="file-name-display"></div>
+                    <div class="photo-preview" id="previewContainer"></div>
+                </div>
+                <button type="submit" data-lang="submit" id="submitBtn" style="width: 100%; margin-top: 1rem;"
+                    class="animate-fade-up">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showFileName(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('fileName').textContent = input.files[0].name;
+            }
+        }
+
+        // Photo to Base64
+        let photoBase64 = '';
+        document.getElementById('photoInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    photoBase64 = reader.result;
+                    document.getElementById('previewContainer').innerHTML = `<img src="${photoBase64}">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 18+ Validation & Submit
+        document.getElementById('voterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const dob = new Date(document.getElementById('dob').value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const m = today.getMonth() - dob.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            if (age < 18) {
+                alert('You must be 18 or older to register.');
+                return;
+            }
+
+            const formData = {
+                type: 'voter',
+                name: e.target.name.value,
+                email: e.target.email.value,
+                aadhaar: e.target.aadhaar.value,
+                dob: e.target.dob.value,
+                photo: photoBase64
+            };
+
+            try {
+                const res = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const result = await res.json();
+                alert(result.message);
+                if (result.success) window.location.href = 'index.html';
+            } catch (err) {
+                console.error(err);
+                alert('Error submitting form');
+            }
+        });
+    </script>
+</body>
+
+</html>

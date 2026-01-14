@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="language.js" defer></script>
+</head>
+
+<body>
+    <div class="background-particles"></div>
+    <nav class="navbar animate-fade-up">
+        <div class="logo">
+            <span class="icon-logo">🗳️</span>
+            <span data-lang="title">Online Voting</span>
+        </div>
+        <div class="controls">
+            <select id="langSelect">
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+                <option value="hi">हिन्दी</option>
+            </select>
+        </div>
+    </nav>
+
+    <div class="container animate-fade-up" style="animation-delay: 0.1s;">
+        <h2 class="text-center" data-lang="authOptions"
+            style="color: var(--primary-color); font-weight: 800; font-size: 2.5rem; margin-bottom: 2rem;">
+            Authentication</h2>
+        <div class="card text-center animate-fade-up" style="max-width: 500px; margin: 0 auto; animation-delay: 0.2s;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🔐</div>
+            <p data-lang="authDesc" style="font-size: 1.1rem; color: var(--text-light); margin-bottom: 2rem;">Please
+                choose to login or register.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <button onclick="window.location.href='login.html'" class="hero-btn"
+                    style="width: 100%; border-radius: 12px; text-align: center; justify-content: center;"
+                    data-lang="login">Login</button>
+                <button onclick="window.location.href='signup.html'"
+                    style="width: 100%; font-size: 1.1rem; padding: 1rem; background-color: white; color: var(--primary-color); border: 2px solid var(--primary-color); border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;"
+                    onmouseover="this.style.background='var(--light-bg)'" onmouseout="this.style.background='white'"
+                    data-lang="signup">Signup</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

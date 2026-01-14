@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Signup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="language.js" defer></script>
+</head>
+
+<body>
+    <div class="background-particles"></div>
+    <nav class="navbar animate-fade-up">
+        <div class="logo"><span class="icon-logo">🗳️</span> <span data-lang="title">Online Voting</span></div>
+        <select id="langSelect">
+            <option value="en">English</option>
+            <option value="ta">தமிழ்</option>
+            <option value="hi">हिन्दी</option>
+        </select>
+    </nav>
+
+    <div class="container animate-fade-up" style="animation-delay: 0.1s;">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 data-lang="candidate" class="text-center" style="margin-bottom: 2rem;">Candidate Registration</h2>
+            <form id="candidateForm">
+                <div class="form-group animate-fade-up" style="animation-delay: 0.2s;">
+                    <label data-lang="name">Full Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.3s;">
+                    <label data-lang="party">Party Name</label>
+                    <input type="text" name="party" required>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.4s;">
+                    <label data-lang="mobile">Mobile Number</label>
+                    <input type="text" name="mobile" pattern="\d{10}" title="10 digit mobile" required>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.5s;">
+                    <label data-lang="password">Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.6s;">
+                    <label data-lang="ideology">Ideology</label>
+                    <textarea name="ideology" rows="3"></textarea>
+                </div>
+                <div class="form-group animate-fade-up" style="animation-delay: 0.7s;">
+                    <label data-lang="photo">Upload Photo</label>
+                    <label for="photoInput" class="custom-file-upload">
+                        <span>📤</span> <span data-lang="photo">Choose Photo</span>
+                    </label>
+                    <input type="file" id="photoInput" accept="image/*" required onchange="showFileName(this)">
+                    <div id="fileName" class="file-name-display"></div>
+                    <div class="photo-preview" id="previewContainer"></div>
+                </div>
+                <button type="submit" data-lang="submit" style="width: 100%; margin-top: 1rem;"
+                    class="animate-fade-up">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showFileName(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('fileName').textContent = input.files[0].name;
+            }
+        }
+
+        let photoBase64 = '';
+        document.getElementById('photoInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    photoBase64 = reader.result;
+                    document.getElementById('previewContainer').innerHTML = `<img src="${photoBase64}">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('candidateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                type: 'candidate',
+                name: e.target.name.value,
+                party: e.target.party.value,
+                mobile: e.target.mobile.value,
+                password: e.target.password.value, // Plaintext as per prompt constraints
+                ideology: e.target.ideology.value,
+                photo: photoBase64
+            };
+
+            try {
+                const res = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const result = await res.json();
+                alert(result.message);
+                if (result.success) window.location.href = 'index.html';
+            } catch (err) {
+                console.error(err);
+                alert('Error submitting form');
+            }
+        });
+    </script>
+</body>
+
+</html>

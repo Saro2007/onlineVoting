@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Voting</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="language.js" defer></script>
+</head>
+
+<body>
+    <div class="background-particles"></div>
+    <nav class="navbar animate-fade-up">
+        <div class="logo">
+            <span class="icon-logo">🗳️</span>
+            <span data-lang="title">Online Voting</span>
+        </div>
+        <div class="controls">
+            <select id="langSelect">
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+                <option value="hi">हिन्दी</option>
+            </select>
+            <div class="profile-icon" onclick="window.location.href='auth.html'" title="Profile">👤</div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="animate-fade-up" data-lang="heroTitle">Vote from Anywhere, Anytime. Safe & Secure.</h1>
+            <p class="animate-fade-up" style="animation-delay: 0.1s;" data-lang="heroDesc">Experience the future of
+                democracy with our blockchain-secured, AI-powered online voting platform.</p>
+            <a href="auth.html" class="hero-btn animate-fade-up" style="animation-delay: 0.2s;" data-lang="voteBtn">Vote
+                Now</a>
+        </div>
+        <div class="hero-image-container animate-float">
+            <img src="hero.png" alt="Voting System" class="hero-image">
+        </div>
+    </header>
+
+    <!-- Features -->
+    <section class="features">
+        <div class="feature-card animate-fade-up" style="animation-delay: 0.3s;">
+            <div class="feature-icon">🔒</div>
+            <h3 data-lang="secureTitle">100% Secure</h3>
+            <p data-lang="secureDesc">Built with enterprise-grade security protocols to ensure your vote is safe,
+                anonymous, and counted.</p>
+        </div>
+        <div class="feature-card animate-fade-up" style="animation-delay: 0.4s;">
+            <div class="feature-icon">⚡</div>
+            <h3 data-lang="fastTitle">Fast & Easy</h3>
+            <p data-lang="fastDesc">Vote in seconds from your mobile or desktop. No queues, no paperwork, just seamless
+                democracy.</p>
+        </div>
+        <div class="feature-card animate-fade-up" style="animation-delay: 0.5s;">
+            <div class="feature-icon">🌍</div>
+            <h3 data-lang="accessTitle">Accessible</h3>
+            <p data-lang="accessDesc">Whether you're domestic or overseas, exercise your right to vote without
+                geographic barriers.</p>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <div class="container text-center">
+        <div id="resultsSection" class="card animate-fade-up" style="animation-delay: 0.6s;">
+            <h2 id="resultsHeader" data-lang="results">Live Results Center</h2>
+            <div id="statusMessage" class="mt-2">
+                <p data-lang="resultsPending">Results are being calculated. The election is currently in progress.</p>
+                <div style="font-size: 3rem; margin-top: 20px; animation: pulse 2s infinite;">⏳</div>
+            </div>
+            <table id="resultsTable" class="hidden">
+                <thead>
+                    <tr>
+                        <th data-lang="candidate">Candidate</th>
+                        <th data-lang="party">Party</th>
+                        <th>Votes Received</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Online Voting System. All Rights Reserved.</p>
+        <p>GovTech Initiative | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+
+    <script>
+        async function fetchConfig() {
+            try {
+                const res = await fetch('/api/candidates'); // Gets candidates and config
+                const data = await res.json();
+
+                if (data.config.resultsPublished) {
+                    document.getElementById('statusMessage').classList.add('hidden');
+                    document.getElementById('resultsTable').classList.remove('hidden');
+                    document.getElementById('resultsHeader').setAttribute('data-lang', 'resultsPublished');
+
+                    const tbody = document.getElementById('resultsBody');
+                    // Sort by votes
+                    const sorted = data.candidates.sort((a, b) => b.voteCount - a.voteCount);
+                    tbody.innerHTML = sorted.map(c => `
+                        <tr>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    ${c.photo ? `<img src="${c.photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">` : ''}
+                                    <strong>${c.name}</strong>
+                                </div>
+                            </td>
+                            <td>${c.party}</td>
+                            <td><span class="status status-approved">${c.voteCount}</span></td>
+                        </tr>
+                    `).join('');
+
+                    const lang = localStorage.getItem('lang') || 'en';
+                    setLanguage(lang);
+                } else {
+                    document.getElementById('statusMessage').classList.remove('hidden');
+                    document.getElementById('resultsTable').classList.add('hidden');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        fetchConfig();
+    </script>
+</body>
+
+</html>

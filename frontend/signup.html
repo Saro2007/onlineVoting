@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Selection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="language.js" defer></script>
+</head>
+
+<body>
+    <div class="background-particles"></div>
+    <nav class="navbar animate-fade-up">
+        <div class="logo">
+            <span class="icon-logo">🗳️</span>
+            <span data-lang="title">Online Voting</span>
+        </div>
+        <div class="controls">
+            <select id="langSelect">
+                <option value="en">English</option>
+                <option value="ta">தமிழ்</option>
+                <option value="hi">हिन्दी</option>
+            </select>
+        </div>
+    </nav>
+
+    <div class="container animate-fade-up" style="animation-delay: 0.1s;">
+        <h2 class="text-center" data-lang="chooseType"
+            style="color: var(--primary-color); font-weight: 800; font-size: 2.5rem; margin-bottom: 3rem;">Choose
+            Registration Type</h2>
+        <div class="grid"
+            style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 900px; margin: 0 auto;">
+            <div class="card text-center feature-card animate-fade-up"
+                style="animation-delay: 0.2s; cursor: pointer; border: 2px solid transparent;"
+                onclick="window.location.href='voter-signup.html'"
+                onmouseover="this.style.borderColor='var(--accent-color)'"
+                onmouseout="this.style.borderColor='transparent'">
+                <div
+                    style="font-size: 4rem; margin-bottom: 1rem; background: #e2e8f0; width: 100px; height: 100px; line-height: 100px; border-radius: 50%; margin: 0 auto 1.5rem auto;">
+                    🙋</div>
+                <h3 data-lang="voter" style="font-size: 1.8rem; margin-bottom: 1rem;">Voter</h3>
+                <p data-lang="voterSignupDesc">Register to cast your vote.</p>
+            </div>
+            <div class="card text-center feature-card animate-fade-up"
+                style="animation-delay: 0.3s; cursor: pointer; border: 2px solid transparent;"
+                onclick="window.location.href='candidate-signup.html'"
+                onmouseover="this.style.borderColor='var(--accent-color)'"
+                onmouseout="this.style.borderColor='transparent'">
+                <div
+                    style="font-size: 4rem; margin-bottom: 1rem; background: #fef3c7; width: 100px; height: 100px; line-height: 100px; border-radius: 50%; margin: 0 auto 1.5rem auto;">
+                    🕴️</div>
+                <h3 data-lang="candidate" style="font-size: 1.8rem; margin-bottom: 1rem;">Candidate</h3>
+                <p data-lang="candidateSignupDesc">Register to contest in elections.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
