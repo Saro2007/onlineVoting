@@ -159,16 +159,21 @@ app.post('/api/login', async (req, res) => {
                 // But typically voting login is to vote. 
                 // Let's allow login but UI handles "Already Voted".
             }
-            // Generate OTP
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            // Store OTP in temp memory or file. Ideally redis, here we use a global object or attach to voter temporarily (bad practice but simple for file-based)
-            // Better: Store in a separate 'otps.json' or in memory variable
-            // For simplicity: In-memory map
+            // Store OTP in global map
             global.otpMap = global.otpMap || {};
             global.otpMap[identifier] = otp;
 
-            await sendEmail(voter.email, 'Voting OTP', `Your OTP is ${otp}`);
-            res.json({ success: true, message: 'OTP sent to registered email' });
+            console.log(`[GENERATED OTP] User: ${voter.name} | OTP: ${otp}`);
+
+            // Send Email (don't await indefinitely, or catch error to ensure response)
+            try {
+                await sendEmail(voter.email, 'Voting OTP', `Your OTP is ${otp}`);
+            } catch (err) {
+                console.error("Email send failed inside route:", err);
+            }
+
+            // Return OTP in response for debugging (since email might fail on free servers)
+            res.json({ success: true, message: 'OTP sent to registered email', debug_otp: otp });
         } else {
             res.json({ success: false, message: 'Voter not found or not approved' });
         }

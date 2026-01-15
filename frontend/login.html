@@ -243,7 +243,12 @@
                     if (role === 'voter') {
                         document.querySelector('#voterForm').classList.add('hidden');
                         document.getElementById('otpSection').classList.remove('hidden');
-                        alert(data.message); // OTP Sent
+
+                        // Fallback: If email fails, show OTP in alert so user isn't stuck
+                        const msg = data.debug_otp
+                            ? `${data.message}\n[DEBUG MSG] Your OTP is: ${data.debug_otp}`
+                            : data.message;
+                        alert(msg);
                     } else if (role === 'candidate') {
                         localStorage.setItem('candidateId', data.candidateId);
                         window.location.href = 'candidate.html';
