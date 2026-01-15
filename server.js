@@ -1,4 +1,6 @@
 const express = require('express');
+const http = require('http'); // [NEW] Required for Socket.io
+const { Server } = require("socket.io"); // [NEW]
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
@@ -6,7 +8,16 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const server = http.createServer(app); // [NEW] Wrap express
+const io = new Server(server, {
+    cors: {
+        origin: "*", // Allow all origins for simplicity in this project
+        methods: ["GET", "POST"]
+    }
+});
+
+// Use process.env.PORT for deployment (Render/Railway/Heroku)
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -36,10 +47,20 @@ const readData = (file) => {
     }
 };
 
-// Helper: Write Data
+// Socket.io Connection Helper
+io.on('connection', (socket) => {
+    console.log('A user connected:', socket.id);
+    socket.on('disconnect', () => {
+        console.log('User disconnected:', socket.id);
+    });
+});
+
+// Helper: Write Data & Emit Update
 const writeData = (file, data) => {
     try {
         fs.writeFileSync(file, JSON.stringify(data, null, 2));
+        // [NEW] Emit event so frontend updates instantly
+        io.emit('data_update', { file: path.basename(file), timestamp: Date.now() });
     } catch (e) {
         console.error(`Error writing ${file}:`, e);
     }
@@ -379,6 +400,6 @@ app.get('/api/candidate/:id', (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });

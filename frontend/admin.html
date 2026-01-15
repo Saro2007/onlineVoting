@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- [NEW] Socket.io Client -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="language.js" defer></script>
     <style>
         .admin-layout {
@@ -236,6 +238,35 @@
         }
 
         let isPublished = false;
+
+        // [NEW] Real-Time Scoket Setup
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Connected to Real-Time Server');
+            document.querySelector('.logo span:first-child').title = "Online & Real-Time";
+        });
+
+        socket.on('data_update', (data) => {
+            console.log('Update received:', data.file);
+            // Refresh data based on what changed
+            if (data.file === 'requests.json') {
+                if (document.getElementById('voter-requests').classList.contains('active')) loadRequests('voter');
+                if (document.getElementById('candidate-requests').classList.contains('active')) loadRequests('candidate');
+            }
+            if (data.file === 'voters.json') {
+                if (document.getElementById('voters').classList.contains('active')) loadVoters();
+            }
+            if (data.file === 'candidates.json') {
+                if (document.getElementById('candidates').classList.contains('active')) loadCandidates();
+            }
+            if (data.file === 'config.json') {
+                loadOverview(); // Update publish status
+            }
+            if (data.file === 'admins.json') {
+                if (document.getElementById('subadmins').classList.contains('active')) loadAdmins();
+            }
+        });
 
         async function loadOverview() {
             const confRes = await fetch('/api/config');
